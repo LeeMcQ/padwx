@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "PadWx",
+      "hasCanvas": false,
+      "bodyTextLen": 1070,
+      "bodyTextHash": "b21440c340135008b71f38f6e58a7ae2374cbdb7f8d0f98477e00aa60e08314c",
+      "bodyTextPrefix": "SANSA PADS PadWx Hartebeesthoek and Matjiesfontein, live. HBK MT",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "PadWx",
+      "hasCanvas": false,
+      "bodyTextLen": 1070,
+      "bodyTextHash": "b21440c340135008b71f38f6e58a7ae2374cbdb7f8d0f98477e00aa60e08314c",
+      "bodyTextPrefix": "SANSA PADS PadWx Hartebeesthoek and Matjiesfontein, live. HBK MT",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}

@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>PadWx</title>
+  <meta name="description" content="Live Hartebeesthoek and Matjiesfontein earth-station weather. Hourly updates." />
+  <meta name="theme-color" content="#0e0f0c" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="PadWx" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0e0f0c;
+      --fg: #eceae4;
+      --card: #181a16;
+      --muted: #9a9b94;
+      --subtle: #6e6f69;
+      --accent: #8ea8a3;
+      --accent-fg: #0e0f0c;
+      --border: #2a2c27;
+      --ok: #7f9e7a;
+      --warn: #c4a574;
+      --bad: #c47a6a;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--fg); font-family: "IBM Plex Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    body { min-height: 100dvh; }
+    button { font: inherit; color: inherit; }
+    .wrap { max-width: 48rem; margin: 0 auto; padding: max(1.25rem, env(safe-area-inset-top)) 1rem 4rem; display: flex; flex-direction: column; gap: 1.5rem; }
+    .kicker { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.75rem; letter-spacing: 0.18em; color: var(--accent); text-transform: uppercase; }
+    h1 { margin: 0.25rem 0 0; font-size: 1.875rem; font-weight: 500; letter-spacing: -0.03em; }
+    h2 { margin: 0; font-size: 1.125rem; font-weight: 500; }
+    .lede { margin: 0.35rem 0 0; color: var(--muted); font-size: 0.9rem; }
+    .row { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
+    .toggle { display: flex; gap: 0.35rem; background: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.3rem; }
+    .toggle button { flex: 1; border: 0; background: transparent; padding: 0.65rem 0.75rem; border-radius: 0.55rem; color: var(--muted); font-size: 0.85rem; font-weight: 500; }
+    .toggle button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); }
+    .meta { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.75rem; color: var(--subtle); }
+    .grid { display: grid; gap: 1rem; }
+    .grid.both { grid-template-columns: 1fr; }
+    @media (min-width: 768px) { .grid.both { grid-template-columns: 1fr 1fr; } .wrap { padding-left: 1.5rem; padding-right: 1.5rem; } }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 1.1rem; padding: 1.15rem; }
+    .temp { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 2.4rem; font-variant-numeric: tabular-nums; letter-spacing: -0.04em; line-height: 1; }
+    .temp span { font-size: 1.1rem; color: var(--muted); margin-left: 0.1rem; }
+    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 1.1rem; font-size: 0.9rem; }
+    dt { color: var(--subtle); font-size: 0.75rem; }
+    dd { margin: 0.2rem 0 0; font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+    .gates { display: flex; gap: 0.5rem; margin-top: 1rem; }
+    .gate { flex: 1; border-radius: 0.6rem; padding: 0.45rem 0.4rem; text-align: center; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; }
+    .go { background: color-mix(in srgb, var(--ok) 22%, transparent); color: var(--ok); }
+    .caution { background: color-mix(in srgb, var(--warn) 22%, transparent); color: var(--warn); }
+    .hold { background: color-mix(in srgb, var(--bad) 22%, transparent); color: var(--bad); }
+    .compass { width: 4.5rem; height: 4.5rem; }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; padding: 0 1rem; border-radius: 0.6rem; background: var(--accent); color: var(--accent-fg); text-decoration: none; font-size: 0.9rem; font-weight: 500; border: 0; }
+    .btn.ghost { background: transparent; color: var(--fg); border: 1px solid var(--border); }
+    .icon-btn { width: 2.75rem; height: 2.75rem; border-radius: 0.6rem; border: 1px solid var(--border); background: var(--card); }
+    .icon-btn.spin svg { animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .widget-only .home-only { display: none; }
+    .error { color: var(--bad); font-size: 0.9rem; }
+    ol { margin: 0.9rem 0 0; padding-left: 1.1rem; color: var(--muted); font-size: 0.9rem; }
+    li { margin: 0.35rem 0; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <main class="wrap" id="app">
+    <header class="row home-only">
+      <div>
+        <p class="kicker">SANSA pads</p>
+        <h1>PadWx</h1>
+        <p class="lede">Hartebeesthoek and Matjiesfontein, live.</p>
+      </div>
+      <button class="icon-btn" id="refresh" type="button" aria-label="Refresh now">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 3v6h-6"/></svg>
+      </button>
+    </header>
+
+    <div class="toggle" role="tablist" aria-label="Site">
+      <button type="button" data-site="hbk">HBK</button>
+      <button type="button" data-site="mtj">MTJ</button>
+      <button type="button" data-site="both" class="home-only">Both</button>
+    </div>
+
+    <p class="meta" id="stamp">Loading…</p>
+    <p class="error hidden" id="err"></p>
+    <div class="grid" id="boards"></div>
+
+    <section class="card home-only">
+      <h2>Android app and pad widget</h2>
+      <p class="lede">This page is public. Open it in Chrome on your phone — no Grok login. Install it, then pin the widget glance as a second home-screen icon.</p>
+      <div class="actions" style="margin-top:1rem">
+        <a class="btn" id="widgetLink" href="?view=widget&site=mtj">Open MTJ widget</a>
+        <button class="btn ghost hidden" id="install" type="button">Install PadWx</button>
+      </div>
+      <ol>
+        <li><strong style="color:var(--fg)">App —</strong> Chrome menu, then Install app or Add to Home screen.</li>
+        <li><strong style="color:var(--fg)">Widget —</strong> Open the glance, then Add to Home screen.</li>
+        <li><strong style="color:var(--fg)">Hourly —</strong> Readings refresh automatically every hour, and again when you open the app.</li>
+      </ol>
+    </section>
+  </main>
+  <script>
+    const META = {
+      hbk: { name: "Hartebeesthoek", short: "HBK", region: "Magaliesberg pad" },
+      mtj: { name: "Matjiesfontein", short: "MTJ", region: "Karoo deep-space pad" },
+    };
+    const CARDINALS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+    const params = new URLSearchParams(location.search);
+    const widget = params.get("view") === "widget";
+    let choice = params.get("site") === "hbk" || params.get("site") === "mtj" || params.get("site") === "both"
+      ? params.get("site")
+      : (localStorage.getItem("padwx-site") || (widget ? "mtj" : "both"));
+    if (widget && choice === "both") choice = "mtj";
+    let payload = null;
+    let deferredPrompt = null;
+
+    if (widget) document.body.classList.add("widget-only");
+
+    function cardinal(deg) {
+      return CARDINALS[Math.round(((deg % 360) + 360) % 360 / 22.5) % 16];
+    }
+    function clock(ms) {
+      return new Intl.DateTimeFormat("en-ZA", { timeZone: "Africa/Johannesburg", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(ms));
+    }
+    function gates(s) {
+      const crane = s.windSpeed < 20 ? "go" : s.windSpeed < 32 ? "caution" : "hold";
+      let pour = "go";
+      if (s.rainIntensity > 0 || s.rainAccumulation > 0.2 || s.airTemp < 5) pour = "hold";
+      else if (s.airTemp < 8) pour = "caution";
+      const align = s.windSpeed > 18 || s.rainIntensity > 0 ? "hold" : s.windSpeed > 12 ? "caution" : "go";
+      return { crane, pour, align };
+    }
+    function compass(deg) {
+      return `<svg class="compass" viewBox="0 0 80 80" aria-hidden="true">
+        <circle cx="40" cy="40" r="36" fill="#0e0f0c" stroke="#2a2c27"/>
+        <g transform="rotate(${deg} 40 40)">
+          <polygon points="40,10 45,40 40,36 35,40" fill="#8ea8a3"/>
+          <polygon points="40,70 45,40 40,44 35,40" fill="#6e6f69"/>
+        </g>
+        <circle cx="40" cy="40" r="3" fill="#eceae4"/>
+      </svg>`;
+    }
+    function board(siteId) {
+      const site = payload.sites[siteId];
+      const now = site && site.now;
+      if (!now) return `<article class="card"><p class="kicker">${META[siteId].short}</p><h2>${META[siteId].name}</h2><p class="lede">Waiting for a sample.</p></article>`;
+      const g = gates(now);
+      return `<article class="card">
+        <div class="row">
+          <div>
+            <p class="kicker">${META[siteId].short}</p>
+            <h2>${META[siteId].name}</h2>
+            <p class="lede">${META[siteId].region}</p>
+          </div>
+          <p class="temp">${now.airTemp.toFixed(1)}<span>°</span></p>
+        </div>
+        <div class="row" style="margin-top:1rem;align-items:center">
+          ${compass(now.windDirection)}
+          <dl class="metrics" style="flex:1;margin:0">
+            <div><dt>Wind</dt><dd>${cardinal(now.windDirection)} ${now.windSpeed.toFixed(0)}</dd></div>
+            <div><dt>RH</dt><dd>${now.airHumidity.toFixed(0)}%</dd></div>
+            <div><dt>hPa</dt><dd>${(now.airPressure/100).toFixed(0)}</dd></div>
+          </dl>
+        </div>
+        <div class="gates" aria-label="Construction gates">
+          <div class="gate ${g.crane}">Crane ${g.crane}</div>
+          <div class="gate ${g.pour}">Pour ${g.pour}</div>
+          <div class="gate ${g.align}">Align ${g.align}</div>
+        </div>
+        <p class="meta" style="margin:0.9rem 0 0">Updated ${clock(now.time)} SAST</p>
+      </article>`;
+    }
+    function visible() {
+      if (choice === "both" && !widget) return ["hbk", "mtj"];
+      return [choice === "hbk" ? "hbk" : "mtj"];
+    }
+    function render() {
+      document.querySelectorAll(".toggle button").forEach((b) => {
+        b.setAttribute("aria-pressed", b.dataset.site === choice ? "true" : "false");
+        if (widget && b.dataset.site === "both") b.classList.add("hidden");
+      });
+      const boards = document.getElementById("boards");
+      boards.className = "grid" + (visible().length > 1 ? " both" : "");
+      if (!payload) {
+        boards.innerHTML = `<article class="card"><p class="lede">Fetching pads…</p></article>`;
+        return;
+      }
+      boards.innerHTML = visible().map(board).join("");
+      const stamp = document.getElementById("stamp");
+      stamp.textContent = `${payload.stale ? "Showing last good sample · " : ""}Last update ${clock(payload.fetchedAt)} SAST · hourly`;
+      const err = document.getElementById("err");
+      if (payload.error) { err.textContent = payload.error; err.classList.remove("hidden"); }
+      else err.classList.add("hidden");
+      const widgetSite = choice === "hbk" ? "hbk" : "mtj";
+      document.getElementById("widgetLink").href = `?view=widget&site=${widgetSite}`;
+      document.getElementById("widgetLink").textContent = `Open ${widgetSite.toUpperCase()} widget`;
+    }
+    async function load() {
+      document.getElementById("refresh").classList.add("spin");
+      try {
+        const res = await fetch("weather.json?t=" + Date.now(), { cache: "no-store" });
+        if (!res.ok) throw new Error("Weather " + res.status);
+        payload = await res.json();
+      } catch (e) {
+        document.getElementById("err").textContent = "Could not load pad weather.";
+        document.getElementById("err").classList.remove("hidden");
+      }
+      document.getElementById("refresh").classList.remove("spin");
+      render();
+    }
+    document.querySelectorAll(".toggle button").forEach((b) => {
+      b.addEventListener("click", () => {
+        choice = b.dataset.site;
+        localStorage.setItem("padwx-site", choice);
+        const next = new URL(location.href);
+        next.searchParams.set("site", choice);
+        if (widget) next.searchParams.set("view", "widget");
+        history.replaceState({}, "", next);
+        render();
+      });
+    });
+    document.getElementById("refresh").addEventListener("click", () => load());
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById("install").classList.remove("hidden");
+    });
+    document.getElementById("install").addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      await deferredPrompt.prompt();
+      deferredPrompt = null;
+      document.getElementById("install").classList.add("hidden");
+    });
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+    load();
+    setInterval(load, 60 * 60 * 1000);
+  </script>
+</body>
+</html>
