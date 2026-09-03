@@ -1,0 +1,9 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>PadWx widget</title>
+<script>
+  const q = new URLSearchParams(location.search);
+  if (!q.get("site")) q.set("site", "mtj");
+  q.set("view", "widget");
+  location.replace("./index.html?" + q.toString());
+</script>

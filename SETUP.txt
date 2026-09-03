@@ -1,0 +1,31 @@
+PadWx — put this on GitHub Pages
+
+1. GitHub → New repository
+   Name: padwx   (or padwerke)
+   Public
+   Create repository
+
+2. Add file → Upload files
+   Upload everything in this zip
+   Keep folders:
+     .github/workflows/update.yml
+     scripts/fetch-weather.mjs
+   Commit to main
+
+3. Settings → Pages
+   Source: Deploy from a branch
+   Branch: main
+   Folder: / (root)
+   Save
+
+4. Phone
+   https://leemcq.github.io/padwx/
+   Chrome → Add to Home screen
+
+   Widget:
+   https://leemcq.github.io/padwx/widget.html?site=mtj
+   Add to Home screen again
+
+5. Hourly updates
+   Actions tab → enable workflows if asked
+   weather.json refreshes every hour from SANSA

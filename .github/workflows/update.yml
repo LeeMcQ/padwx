@@ -1,0 +1,26 @@
+name: Update weather
+on:
+  schedule:
+    - cron: "7 * * * *"
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: weather
+  cancel-in-progress: true
+jobs:
+  weather:
+    if: github.event_name != 'push' || github.event.head_commit.message != 'hourly weather'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/fetch-weather.mjs
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: hourly weather
+          file_pattern: weather.json
