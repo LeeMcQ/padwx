@@ -1,3 +1,9 @@
+## MTJ neon redesign (2026-09)
+
+Static dashboard + widget redesigned to the Matjiesfontein deep-space pad mockup (glass/neon), with Grafana-backed fields (gust, rain accum, pressure, humidity, trend charts, high/low, construction gates). Preview shots in `screenshots/mtj-redesign/`.
+
+---
+
 # PadWx
 
 Live SANSA weather for Hartebeesthoek (HBK) and Matjiesfontein (MTJ).
