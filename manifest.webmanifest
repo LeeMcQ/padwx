@@ -1,13 +1,14 @@
 {
-  "name": "PadWx",
+  "name": "PadWx — SANSA Pad Weather",
   "short_name": "PadWx",
-  "description": "Live HBK and MTJ earth-station weather",
-  "start_url": "./",
+  "description": "Live HBK & MTJ earth-station weather with construction gates",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0e0f0c",
-  "theme_color": "#0e0f0c",
+  "orientation": "any",
+  "background_color": "#050814",
+  "theme_color": "#050814",
   "icons": [
-    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
   ]
 }
